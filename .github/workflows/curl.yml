@@ -1,0 +1,51 @@
+name: Test cURL Installation
+
+on:
+  workflow_dispatch:
+  push:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: browser-actions/setup-chrome@v1
+        id: setup-chrome
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+
+      - name: Install and test
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/quarkdown-labs/get-quarkdown/refs/heads/main/install.sh | sudo bash
+          
+          echo ".docname {test}" > main.qd
+          
+          echo "Puppeteer executable path:"
+          echo "$PUPPETEER_EXECUTABLE_PATH"
+          
+          quarkdown c main.qd -o ./output
+          
+          ls ./output
+          
+          if [ ! -d "./output/test" ]; then
+            echo "Output directory not found" >&2
+            exit 1
+          fi
+          
+          quarkdown c main.qd -o ./output --pdf --pdf-no-sandbox
+          
+          ls ./output
+          
+          if [ ! -f "./output/test.pdf" ]; then
+            echo "Output PDF not found" >&2
+            exit 1
+          fi
+        shell: bash
+        env:
+          PUPPETEER_EXECUTABLE_PATH: ${{ steps.setup-chrome.outputs.chrome-path }}

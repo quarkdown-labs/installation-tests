@@ -1,0 +1,48 @@
+name: Test Scoop Installation
+
+on:
+  workflow_dispatch:
+  push:
+
+jobs:
+  test:
+    runs-on: windows-latest
+
+    steps:
+      - uses: browser-actions/setup-chrome@v1
+        id: setup-chrome
+
+      - name: Setup Scoop and test
+        run: |
+          Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+          Invoke-RestMethod -Uri https://get.scoop.sh | Invoke-Expression
+        
+          scoop bucket add java
+          scoop bucket add quarkdown https://github.com/quarkdown-labs/scoop-quarkdown
+          
+          scoop install quarkdown
+        
+          $content = ".docname {test}"
+          $content | Out-File -FilePath main.qd -Encoding utf8
+          
+          echo "Puppeteeer executable path:"
+          echo $PUPPETEER_EXECUTABLE_PATH
+          
+          quarkdown c main.qd -o ./output
+          
+          Get-ChildItem -Path ./output
+          
+          if (-Not (Test-Path -Path "./output/test")) {
+            Write-Error "Output directory not found"
+          }
+          
+          quarkdown c main.qd -o ./output --pdf
+          
+          Get-ChildItem -Path ./output
+
+          if (-Not (Test-Path -Path "./output/test.pdf")) {
+            Write-Error "Output PDF not found"
+          }
+        shell: powershell
+        env:
+          PUPPETEER_EXECUTABLE_PATH: ${{ steps.setup-chrome.outputs.chrome-path }}
