@@ -9,9 +9,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Remove Node and Java from PATH
+        id: remove-tools
         run: |
-          export PATH=$(echo "$PATH" | tr ':' '\n' | grep -v '/opt/hostedtoolcache' | tr '\n' ':' | sed 's/:$//')
-          export PATH=$(echo "$PATH" | tr ':' '\n' | grep -v '/usr/bin/java' | tr '\n' ':' | sed 's/:$//')
+          NEW_PATH=$(echo "$PATH" | tr ':' '\n' | grep -v '/opt/hostedtoolcache' | tr '\n' ':' | sed 's/:$//')
+          NEW_PATH=$(echo "$NEW_PATH" | tr ':' '\n' | grep -v '/usr/bin/java' | tr '\n' ':' | sed 's/:$//')
+          echo "PATH=$NEW_PATH" >> $GITHUB_ENV
     
       - name: Check missing dependencies
         run: |
