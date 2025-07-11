@@ -8,26 +8,48 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
+      - name: Remove Node and Java binaries
+        run: |
+          # Remove Node binary if present
+          NODE=$(which node || true)
+          if [ -n "$NODE" ]; then
+          echo "Removing Node at $NODE"
+          sudo rm -f "$NODE"
+          fi
+          
+          # Remove Java binary if present
+          JAVA=$(which java || true)
+          if [ -n "$JAVA" ]; then
+          echo "Removing Java at $JAVA"
+          sudo rm -f "$JAVA"
+          fi
+          
+          # Remove toolcache path fragments from PATH to be sure
+          NEW_PATH=$(echo "$PATH" | tr ':' '\n' | grep -v '/opt/hostedtoolcache' | tr '\n' ':' | sed 's/:$//')
+          
+          echo "PATH=$NEW_PATH" >> $GITHUB_ENV
+
+      - name: Check that Node and Java are not present
+        run: |
+          echo "PATH is: $PATH"
+          
+          if which node; then
+            echo "ERROR: Node is still present"
+            exit 1
+          fi
+          
+          if which java; then
+            echo "ERROR: Java is still present"
+            exit 1
+          fi
+          
+          echo "OK: Node and Java are not present"
+
       - uses: browser-actions/setup-chrome@v1
         id: setup-chrome
 
       - name: Install and test
         run: |
-          # Remove Node and Java from PATH
-          export PATH=$(echo "$PATH" | tr ':' '\n' | grep -v '/opt/hostedtoolcache' | tr '\n' ':' | sed 's/:$//')
-          export PATH=$(echo "$PATH" | tr ':' '\n' | grep -v '/usr/bin/java' | tr '\n' ':' | sed 's/:$//')
-
-          # Make sure they are not available
-          if which node; then
-            echo "ERROR: Node is present"
-            exit 1
-          fi
-          if which java; then
-            echo "ERROR: Java is present"
-            exit 1
-          fi
-          echo "OK: Neither Node nor Java found"
-
           curl -fsSL https://raw.githubusercontent.com/quarkdown-labs/get-quarkdown/refs/heads/main/install.sh | sudo env "PATH=$PATH" bash
           
           echo ".docname {test}" > main.qd
