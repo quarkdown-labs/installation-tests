@@ -12,17 +12,9 @@ jobs:
       - uses: browser-actions/setup-chrome@v1
         id: setup-chrome
 
-      - uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-
       - name: Install and test
         run: |
-          curl -fsSL https://raw.githubusercontent.com/quarkdown-labs/get-quarkdown/refs/heads/main/install.sh | sudo env "PATH=$PATH" bash
+          curl -fsSL https://raw.githubusercontent.com/quarkdown-labs/get-quarkdown/refs/heads/auto-pm/install.sh | sudo env "PATH=$PATH" bash
           
           echo ".docname {test}" > main.qd
           
