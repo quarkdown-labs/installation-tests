@@ -8,15 +8,16 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - name: Remove Node and Java from PATH
-        id: remove-tools
+      - uses: browser-actions/setup-chrome@v1
+        id: setup-chrome
+
+      - name: Install and test
         run: |
-          NEW_PATH=$(echo "$PATH" | tr ':' '\n' | grep -v '/opt/hostedtoolcache' | tr '\n' ':' | sed 's/:$//')
-          NEW_PATH=$(echo "$NEW_PATH" | tr ':' '\n' | grep -v '/usr/bin/java' | tr '\n' ':' | sed 's/:$//')
-          echo "PATH=$NEW_PATH" >> $GITHUB_ENV
-    
-      - name: Check missing dependencies
-        run: |
+          # Remove Node and Java from PATH
+          export PATH=$(echo "$PATH" | tr ':' '\n' | grep -v '/opt/hostedtoolcache' | tr '\n' ':' | sed 's/:$//')
+          export PATH=$(echo "$PATH" | tr ':' '\n' | grep -v '/usr/bin/java' | tr '\n' ':' | sed 's/:$//')
+
+          # Make sure they are not available
           if which node; then
             echo "ERROR: Node is present"
             exit 1
@@ -27,11 +28,6 @@ jobs:
           fi
           echo "OK: Neither Node nor Java found"
 
-      - uses: browser-actions/setup-chrome@v1
-        id: setup-chrome
-
-      - name: Install and test
-        run: |
           curl -fsSL https://raw.githubusercontent.com/quarkdown-labs/get-quarkdown/refs/heads/main/install.sh | sudo env "PATH=$PATH" bash
           
           echo ".docname {test}" > main.qd
