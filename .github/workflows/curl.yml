@@ -7,8 +7,21 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-
+    container: ubuntu:latest
     steps:
+    
+      - name: Check missing dependencies
+        run: |
+          if which node; then
+            echo "ERROR: Node is present"
+            exit 1
+          fi
+          if which java; then
+            echo "ERROR: Java is present"
+            exit 1
+          fi
+          echo "OK: Neither Node nor Java found"
+
       - uses: browser-actions/setup-chrome@v1
         id: setup-chrome
 
