@@ -7,8 +7,11 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    container: ubuntu:latest
     steps:
+      - name: Remove Node and Java from PATH
+        run: |
+          export PATH=$(echo "$PATH" | tr ':' '\n' | grep -v '/opt/hostedtoolcache' | tr '\n' ':' | sed 's/:$//')
+          export PATH=$(echo "$PATH" | tr ':' '\n' | grep -v '/usr/bin/java' | tr '\n' ':' | sed 's/:$//')
     
       - name: Check missing dependencies
         run: |
@@ -21,11 +24,6 @@ jobs:
             exit 1
           fi
           echo "OK: Neither Node nor Java found"
-
-      - name: Install unzip
-        run: |
-          apt-get update
-          apt-get install -y unzip curl
 
       - uses: browser-actions/setup-chrome@v1
         id: setup-chrome
