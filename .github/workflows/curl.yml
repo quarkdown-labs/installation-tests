@@ -14,7 +14,7 @@ jobs:
 
       - name: Install and test
         run: |
-          curl -fsSL https://raw.githubusercontent.com/quarkdown-labs/get-quarkdown/refs/heads/auto-pm/install.sh | sudo env "PATH=$PATH" bash
+          curl -fsSL https://raw.githubusercontent.com/quarkdown-labs/get-quarkdown/refs/heads/main/install.sh | sudo env "PATH=$PATH" bash
           
           echo ".docname {test}" > main.qd
           
