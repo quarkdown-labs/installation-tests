@@ -9,9 +9,6 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - uses: browser-actions/setup-chrome@v1
-        id: setup-chrome
-
       - name: Setup Scoop and test
         run: |
           Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
@@ -44,5 +41,3 @@ jobs:
             Write-Error "Output PDF not found"
           }
         shell: powershell
-        env:
-          PUPPETEER_EXECUTABLE_PATH: ${{ steps.setup-chrome.outputs.chrome-path }}

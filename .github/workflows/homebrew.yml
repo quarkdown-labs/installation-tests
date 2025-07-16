@@ -11,9 +11,6 @@ jobs:
     steps:
       - uses: Homebrew/actions/setup-homebrew@main
 
-      - name: Setup Chrome via Homebrew
-        run: brew install --cask google-chrome
-
       - name: Install and test
         run: |
           brew tap quarkdown-labs/quarkdown
@@ -42,5 +39,3 @@ jobs:
             exit 1
           fi
         shell: bash
-        env:
-          PUPPETEER_EXECUTABLE_PATH: ${{ steps.setup-chrome.outputs.chrome-path }}

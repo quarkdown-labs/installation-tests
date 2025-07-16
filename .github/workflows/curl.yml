@@ -45,17 +45,11 @@ jobs:
           
           echo "OK: Node and Java are not present"
 
-      - uses: browser-actions/setup-chrome@v1
-        id: setup-chrome
-
       - name: Install and test
         run: |
           curl -fsSL https://raw.githubusercontent.com/quarkdown-labs/get-quarkdown/refs/heads/main/install.sh | sudo env "PATH=$PATH" bash
           
           echo ".docname {test}" > main.qd
-          
-          echo "Puppeteer executable path:"
-          echo "$PUPPETEER_EXECUTABLE_PATH"
           
           quarkdown c main.qd -o ./output
           
@@ -75,5 +69,3 @@ jobs:
             exit 1
           fi
         shell: bash
-        env:
-          PUPPETEER_EXECUTABLE_PATH: ${{ steps.setup-chrome.outputs.chrome-path }}
