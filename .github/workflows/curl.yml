@@ -49,6 +49,12 @@ jobs:
         run: |
           curl -fsSL https://raw.githubusercontent.com/quarkdown-labs/get-quarkdown/refs/heads/main/install.sh | sudo env "PATH=$PATH" bash
           
+          # Check if Puppeteer's browser is installed
+          if [ ! -d "$HOME/.cache/puppeteer" ]; then
+              echo "Puppeteer's browser is not installed."
+              exit 1
+          fi
+          
           echo ".docname {test}" > main.qd
           
           quarkdown c main.qd -o ./output
