@@ -1,0 +1,4 @@
+# Add entries here to manually trigger the CI
+
+30-09-2025 v1.10.0
+23-11-2025 v1.12.1
