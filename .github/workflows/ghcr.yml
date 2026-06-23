@@ -1,0 +1,34 @@
+name: Test GHCR Installation
+
+on:
+  workflow_dispatch:
+  push:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pull image and test
+        run: |
+          docker pull ghcr.io/iamgio/quarkdown:latest
+
+          echo ".docname {test}" > main.qd
+
+          docker run --rm --user "$(id -u):$(id -g)" -v "$PWD:/work" -w /work ghcr.io/iamgio/quarkdown:latest c main.qd -o ./output
+
+          ls ./output
+
+          if [ ! -d "./output/test" ]; then
+            echo "Output directory not found" >&2
+            exit 1
+          fi
+
+          docker run --rm --user "$(id -u):$(id -g)" -v "$PWD:/work" -w /work ghcr.io/iamgio/quarkdown:latest c main.qd -o ./output --pdf --pdf-no-sandbox
+
+          ls ./output
+
+          if [ ! -f "./output/test.pdf" ]; then
+            echo "Output PDF not found" >&2
+            exit 1
+          fi
+        shell: bash
